@@ -64,9 +64,6 @@ public:
 
     void addMember(Member memb){
         this->members.push_back(memb);
-    }
-
-    void increaseMemberNb(){
         this->membersNb++;
     }
 
