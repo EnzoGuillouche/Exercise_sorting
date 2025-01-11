@@ -33,7 +33,6 @@ using namespace std;
 
 void printStudents(std::vector<Member> students){
     if (!students.empty()){
-        cout << endl << "Students:" << endl;
         int i = 1;
         for (Member student : students) {
             string s = student.getRole() == "Not defined" ? "" : ": " + student.getRole();
@@ -45,7 +44,6 @@ void printStudents(std::vector<Member> students){
 }
 
 void printTeams(){
-    cout << endl;
     for (Team team : teams) {
         cout << "Team " << team.getTeamNumber() << endl;
         printStudents(team.getMembers());
@@ -85,6 +83,13 @@ void randomStudentAllocation(){
     printTeams();
 }
 
+void resetTeams(){
+    for (Team& team: teams){
+        team.reset();
+    }
+    
+}
+
 void output(bool* quitProgram){
     char ch;
     #ifdef _WIN32
@@ -100,11 +105,17 @@ void output(bool* quitProgram){
             break;
         case '2':
             clearScreen();
+            cout << "Students:" << endl;
             printStudents(members);
             break;
         case '3':
             clearScreen();
             randomStudentAllocation();
+            break;
+        case '4':
+            clearScreen();
+            resetTeams();
+            cout << "Teams have been reset." << endl << endl;
             break;
         case '0':
             clearScreen();
@@ -134,6 +145,7 @@ void mainMenu(){
     cout << "Choose an option:" << endl;
     cout << "1: See the teams" << endl;
     cout << "2: See the students" << endl;
-    cout << "3: Add student to a team" << endl;
+    cout << "3: Sort students in teams" << endl;
+    cout << "4: Reset teams" << endl;
     cout << "0: Quit" << endl;
 }
