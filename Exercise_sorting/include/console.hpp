@@ -1,11 +1,15 @@
 #include "jsonManagement.hpp"
 #include <stdlib.h>
+
+// depending on the architecture, some code will differ
+// this prevents from including unecessary files
 #ifdef _WIN32
 #include <conio.h> // Windows-specific header for _getch()
 #else
 #include <termios.h>
 #include <unistd.h>
 
+// macOS function to get character from input 
 char getch() {
     struct termios oldt, newt;
     char ch;
@@ -20,6 +24,7 @@ char getch() {
 #endif
 
 void mainMenu(){
+    // displays the main menu
     cout << "Choose an option:" << endl;
     cout << "1: See the teams" << endl;
     cout << "2: See the students" << endl;
@@ -29,11 +34,10 @@ void mainMenu(){
 }
 
 void clearScreen(){
+    // clears the console depending on your architecture
     #if defined _WIN32
         system("cls");
-    #elif defined (__LINUX__) || defined(__gnu_linux__) || defined(__linux__)
-        system("clear");
-    #elif defined (__APPLE__)
+    #elif defined (__LINUX__) || defined(__gnu_linux__) || defined(__linux__) || defined (__APPLE__)
         system("clear");
     #endif
 }
@@ -42,23 +46,49 @@ using namespace std;
 
 bool canAskRetrieval = false;
 
-void printStudents(std::vector<Member> students){
-    if (!students.empty()){
-        canAskRetrieval = true;
-        int i = 1;
-        for (Member student : students) {
-            string s = student.getRole() == "Not defined" ? "" : ": " + student.getRole();
-            cout << i << ". " << student.getName() << s << endl;
-            i++;
+// Function to display students by role priority
+vector<Member> sortByRole(vector<Member> members) {
+    vector<Member> sortedMembers;
+
+    // Add members with roles in the priority order
+    for (string& role : roles) {
+        for (Member& member : members) {
+            if (member.getRole() == role) {
+                sortedMembers.push_back(member);
+            }
+        }
+    }
+
+    // Add members with roles not in the priority list
+    for (Member& member : members) {
+        if (find(roles.begin(), roles.end(), member.getRole()) == roles.end()) {
+            sortedMembers.push_back(member);
+        }
+    }
+
+    return sortedMembers;
+}
+
+void printStudents(vector<Member> members) {
+    if (!members.empty()) {
+        vector<Member> sortedMembers = sortByRole(members);
+
+        // Display sorted members
+        for (Member& student : sortedMembers) {
+            if (student.getRole() != "Not defined") {
+                cout << student.getRole() << ": " << student.getName() << endl;
+            } else {
+                cout << student.getName() << endl;
+            }
         }
         cout << endl;
     } else {
-        canAskRetrieval = false;
+        cout << "";
     }
-    
 }
 
 void printTeams(){
+    // displays the entirety of the teams
     for (Team team : teams) {
         cout << "Team " << team.getTeamNumber() << endl;
         printStudents(team.getMembers());
@@ -70,7 +100,7 @@ void setMemberRole(Member* m, Team t){
     m->setRole();
     for (Member& member : t.getMembers()) {
         if (member.getRole() == m->getRole()) {
-            setMemberRole(m, t);
+            setMemberRole(m, t); // recursion if the student has the same role
         }
     }
 }
@@ -79,7 +109,7 @@ void setMember(Member* m, Team t){
     m->setName(members);
     for (Member& member : t.getMembers()) {
         if (member.getName() == m->getName()) {
-            setMember(m, t);
+            setMember(m, t); // recursion if the student has the same name
         }
     }
     setMemberRole(m, t);
@@ -98,6 +128,7 @@ void randomStudentAllocation(){
 }
 
 void resetTeams(){
+    // reset all the teams
     for (Team& team: teams){
         team.reset();
     }
@@ -145,8 +176,8 @@ void askRetrieval(){
                 clearScreen();
                 break;
             default:
-                int c = ch - '0';
-                if (c > 0 && c < 9){
+                int c = ch - '0'; // convertion from char to int
+                if (c > 0 && c < 9){ // is it a valid team?
                     for (Team team : teams){
                         if (team.getTeamNumber() == c){
                             cout << endl << "Find a student by writing its name or role:" << endl;
@@ -181,6 +212,7 @@ void output(bool* quitProgram){
             clearScreen();
             cout << "Students:" << endl;
             printStudents(members);
+            cout << "There are " << NUMBER_OF_STUDENTS << " students." << endl << endl;
             break;
         case '3':
             clearScreen();

@@ -1,6 +1,6 @@
 #include <fstream>
 #include "json.hpp" // Include nlohmann/json header
-#include "teams.hpp" // Include nlohmann/json header
+#include "teams.hpp"
 
 using json = nlohmann::json;
 
@@ -18,7 +18,7 @@ vector<Member> setupJSON(const string& filePath) {
     json jsonData;
     file >> jsonData;
 
-    // Read data into the list
+    // Read data and put into the list
     for (const auto& item : jsonData) {
         students.push_back(Member{item.at("name").get<string>()});
         NUMBER_OF_STUDENTS++;

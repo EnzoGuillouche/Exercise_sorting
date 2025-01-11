@@ -1,6 +1,6 @@
 #include "include/console.hpp"
 
-bool quitProgram = false;
+bool quitProgram = false; // main loop condition
 
 int main(){
     clearScreen();
@@ -9,4 +9,5 @@ int main(){
         mainMenu();
         output(&quitProgram);
     }
+    return 0;
 }
