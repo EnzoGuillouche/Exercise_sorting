@@ -1,5 +1,6 @@
 #include "jsonManagement.hpp"
 #include <stdlib.h>
+#include <algorithm>
 
 // depending on the architecture, some code will differ
 // this prevents from including unecessary files
@@ -105,17 +106,21 @@ void setMemberRole(Member* m, Team t){
     }
 }
 
+vector<string> allocatedNames = {}; // contains names of students that have been assigned
+
 void setMember(Member* m, Team t){
     m->setName(members);
     for (Member& member : t.getMembers()) {
-        if (member.getName() == m->getName()) {
-            setMember(m, t); // recursion if the student has the same name
+        if (member.getName() == m->getName() && find(allocatedNames.begin(), allocatedNames.end(), m->getName()) != allocatedNames.end()) {
+            setMember(m, t); // recursion if a student has the same name
         }
     }
+    allocatedNames.push_back(m->getName());
     setMemberRole(m, t);
 }
 
 void randomStudentAllocation(){
+    allocatedNames.clear();
     for (Team& team : teams){
         team.reset();
         while (team.getMembersNumber() < 6){

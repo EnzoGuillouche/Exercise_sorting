@@ -58,3 +58,9 @@ On Windows:
 `start.cmd`
 
 It will compile and then execute the compiled program.
+
+## Known issues
+
+For now, there are somme issues that are known.
+
+The students allocation is functionning, but only students with a different name that have been already assigned in another team can be assigned. Within a team, students are unique, but some students can be in different teams.
